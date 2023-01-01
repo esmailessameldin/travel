@@ -11,11 +11,20 @@ var MongoDBStore = require('connect-mongodb-session')(session);
 var  username;
 var secret;
 const u =""
+var rand = function() {
+    return Math.random().toString(36).substr(2); // remove `0.`
+};
+
+var token = function() {
+    return rand() + rand(); // to make it longer
+};
+var SecretToken=token()
+
 app.use(express.static('public'))
 app.set('view engine', 'ejs')
 app.set('views', path.join(__dirname,'views'))
 app.use(bodyParser.urlencoded({ extended: false }))
-var port = process.env.PORT || 8080;
+const port = process.env.port || 8080;
 const db= 'mongodb+srv://SOS:SOS@cluster0.slpzxvc.mongodb.net/?retryWrites=true&w=majority'
 try {
   mongoose.connect(
@@ -37,7 +46,7 @@ connection.once('open', () => {
 
 
 app.use(session({
-  secret: username,
+  secret: SecretToken,
   store: new MongoDBStore({
     uri: 'mongodb+srv://SOS:SOS@cluster0.slpzxvc.mongodb.net/?retryWrites=true&w=majority', 
     collection: 'sessions'}),
@@ -262,4 +271,5 @@ app.post('/addtowant', async  function(req,res){
 })
 
 app.listen(port,function() {
-    console.log("app running on port 8080"); });
+   // console.log("server started on port 8080"); });
+  console.log(`server started on port ${port}`); });
